@@ -28,6 +28,7 @@ public class UserService {
     }
 
     public User signUp(SignUpRequestDto signUpRequestDto) {
+        userRepo.findByEmail(signUpRequestDto.getEmail()).ifPresent(u-> {throw new IllegalArgumentException("User already exists!");});
         return userRepo.save(userMapper.toEntity(signUpRequestDto));
     }
 
