@@ -1,5 +1,6 @@
 package com.example.userservice.exceptionHandlers;
 
+import com.example.userservice.exceptions.CustomModelNotFoundException;
 import com.example.userservice.models.CustomError;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,5 +30,14 @@ public class GlobalExceptionHandler {
         error.setStatus(HttpStatus.BAD_REQUEST.value());
 
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CustomModelNotFoundException.class)
+    public ResponseEntity<CustomError> handleProductNotFoundException(CustomModelNotFoundException ex) {
+        CustomError error = new CustomError();
+        error.setMessage(ex.getMessage());
+        error.setStatus(ex.getId());
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 }

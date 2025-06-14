@@ -4,10 +4,13 @@ import com.example.userservice.dtos.LoginRequestDto;
 import com.example.userservice.dtos.SignUpRequestDto;
 import com.example.userservice.dtos.TokenResponseDto;
 import com.example.userservice.dtos.UserResponseDto;
+import com.example.userservice.exceptions.CustomModelNotFoundException;
 import com.example.userservice.mappers.UserMapper;
 import com.example.userservice.models.User;
 import com.example.userservice.services.TokenService;
 import com.example.userservice.services.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -35,8 +38,13 @@ public class UserController {
     }
 
     @GetMapping("validate/{token}")
-    public UserResponseDto validateToken(@PathVariable String token) {
+    public ResponseEntity<UserResponseDto> validateToken(@PathVariable String token) throws CustomModelNotFoundException {
         User user = tokenService.validateToken(token);
-        return userMapper.toDto(user);
+
+        if(user == null) {
+            throw new CustomModelNotFoundException(HttpStatus.NOT_FOUND.value(), "There is no user with this token");
+        }
+
+        return ResponseEntity.ok(userMapper.toDto(user));
     }
 }
